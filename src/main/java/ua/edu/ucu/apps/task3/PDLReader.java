@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class PDLReader {
 
-    private static final String API_KEY = "ваш_ключ_API";
+    private static final String API_KEY = "";
 
     public String getCompanyName(String linkSite) throws IOException {
         JSONObject jsonObject = getData(linkSite);
