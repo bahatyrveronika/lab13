@@ -4,40 +4,23 @@ import java.io.IOException;
 
 public class CompanyInfoFacade {
 
-    private final PDLReader pdlReader;
-    private final BrandfetchReader brandfetchReader;
-    private final WebScraper webScraper;
     private final ChatGPTReader chatGPTReader;
 
     public CompanyInfoFacade() {
-        this.pdlReader = new PDLReader();
-        this.brandfetchReader = new BrandfetchReader();
-        this.webScraper = new WebScraper();
         this.chatGPTReader = new ChatGPTReader();
     }
-
     public Company getCompanyInfo(String linkSite) throws IOException {
         Company company = new Company();
-
-        // PDL API
-        company.name = pdlReader.getCompanyName(linkSite);
-        company.description = pdlReader.getCompanyDescription(linkSite);
-
-        // Brandfetch API
-        company.logoLink = brandfetchReader.getLogo(linkSite);
-
-        // Web scraping
-        String extraInfo = webScraper.getAdditionalInfo(linkSite);
-
-        // ChatGPT
-        String prompt = "Provide a brief summary for the company: " + company.name
-                + ". Here is the description: " + company.description
-                + (extraInfo != null ? " Additional information: " + extraInfo : "");
-        String chatGPTDescription = chatGPTReader.getSummary(prompt);
-
-        // Оновлюємо опис компанії
-        company.description += "\n\nChatGPT Summary:\n" + chatGPTDescription;
-
+        company.name = chatGPTReader.getSummary("Provide just the name of the company for the website: " + linkSite);
+        company.description = chatGPTReader.getSummary("Provide a short description for the company at: " + linkSite);
+        if (company.name == null || company.name.trim().isEmpty()) {
+            company.name = "Company name not found";
+        }
+        if (company.description == null || company.description.trim().isEmpty()) {
+            company.description = "Description not available";
+        }
+        company.logoLink = "Placeholder for logo (add implementation if needed)";
         return company;
     }
+
 }
